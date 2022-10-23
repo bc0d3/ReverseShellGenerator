@@ -1,7 +1,7 @@
 # ReverseShellGenerator
 
 This tool generates multiple reverse shells. The list of reverse shells is stored in a yml file, which you can modify to add more.
-NOTE: This tool was focused on a PEN-300 student, to facilitate the reverse shell.
+NOTE: This tool was focused on a PEN-200 student, to facilitate the reverse shell.
 ```
 usage: rsg.py [-h] [--list] [--interface tun0] [--host 192.168.1.2] [--port 80] --generate
 
