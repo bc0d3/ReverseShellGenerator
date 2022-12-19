@@ -1,0 +1,3 @@
+pwntools
+argparse
+yaml
